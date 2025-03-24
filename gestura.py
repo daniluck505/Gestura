@@ -59,6 +59,11 @@ class Gestura:
                     if not self.dragging:
                         self._start_drag()
                     self._move_cursor()
+                
+                if class_id in {22, 26} and not self.clicked:
+                    self._right_click()
+                    self.clicked = True
+
 
         if not ids_detected.intersection({28, 29}) and self.dragging:
             self._stop_drag()
@@ -89,6 +94,9 @@ class Gestura:
 
     def _left_click(self):
         self.mouse_controller.click(Button.left)
+    
+    def _right_click(self):
+        self.mouse_controller.click(Button.right)
 
     def _start_drag(self):
         self.mouse_controller.press(Button.left)
