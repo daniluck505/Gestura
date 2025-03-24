@@ -10,6 +10,10 @@ import os
 class Gestura:
     def __init__(self, config):
         self.model = YOLO(config['model_weights'])
+        if config['half']:
+            self.model.fuse()
+            self.model = self.model.half()
+        
         self.camera_index = config['camera_index']
         self.confidence = config['conf']
         self.iou_threshold = config['iou']

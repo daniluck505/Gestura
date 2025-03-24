@@ -1,11 +1,12 @@
 model_weights: "YOLOv10n_gestures.pt"
 camera_index: 2
 buffer_size: 5
-scale: 0.2
+scale: 0.4
 speed: 0.2
 conf: 0.7
 iou: 0.5
-device: "cpu"
+device: "mps"
 frame_size:
-  width: 720
-  height: 480
+  width: 480
+  height: 360
+half: True
