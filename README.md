@@ -24,7 +24,6 @@
 ## Настройки через YAML
 
 ```yaml
-model_weights: "YOLOv10n_gestures.pt"
 camera_index: 2           # обычно 0
 buffer_size: 5            # повышает сглаживание
 scale: 0.5                # парамтр дальности
@@ -35,6 +34,7 @@ device: "cpu"             # cpu / cuda / mps (apple silicon)
 frame_size:               # разрешение считывания с камеры
   width: 720
   height: 480
+model_weights: "YOLOv10n_gestures.pt"
 ```
 
 ## Запуск
