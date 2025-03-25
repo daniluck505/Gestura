@@ -32,6 +32,7 @@ class Gestura:
         self.clicked = False
         self.dragging = False
         self.exit = False
+        self.scroll = False
 
     def predict_hands(self, image):
         return self.model.predict(image, device=self.device, conf=self.confidence, iou=self.iou_threshold, verbose=False)[0]
@@ -51,7 +52,7 @@ class Gestura:
 
                 ids_detected.add(class_id)
 
-                if class_id == 18:
+                if class_id in {18, 21}:
                     self._move_cursor()
                     self.clicked = False
 
@@ -67,6 +68,19 @@ class Gestura:
                 if class_id in {22, 26} and not self.clicked:
                     self._right_click()
                     self.clicked = True
+                    
+                if class_id == 23 and not self.clicked:
+                    self.scroll = not self.scroll
+                    self.clicked = True
+                
+                if class_id == 13 and self.scroll:
+                    self._scroll_down() 
+                
+                if class_id == 16 and self.scroll:
+                    self._scroll_up()
+                
+                if class_id == 0 and self.scroll:
+                    self._swipe_left_or_right(center_x)
 
 
         if not ids_detected.intersection({28, 29}) and self.dragging:
@@ -74,7 +88,19 @@ class Gestura:
 
         if 2 in ids_detected:
             self.exit = True
-            
+
+    def _scroll_down(self):
+            self.mouse_controller.scroll(0, -2)
+        
+    def _scroll_up(self):
+        self.mouse_controller.scroll(0, 2)
+
+    def _swipe_left_or_right(self, cursor_x):
+        if cursor_x < self.frame_size[0] // 2:
+            self.mouse_controller.scroll(2, 0)
+        else:
+            self.mouse_controller.scroll(-2, 0)
+
     def _update_control_area(self, image_shape, bbox):
         x_min, y_min, x_max, y_max = bbox
         offset_x = int((x_max - x_min) * (1 + self.scale_factor) / 2)
@@ -125,19 +151,18 @@ class Gestura:
                 frame = cv2.flip(frame, 1)
                 detections = self.predict_hands(frame)
                 self.process_detections(detections, frame.shape)
+                
+                frame = cv2.resize(frame, (240, 180))
+                cv2.imshow('Hand Detection', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
         finally:
             cap.release()
-
-
-
-# def load_config(config_path='config.yml'):
-#     with open(config_path, 'r') as file:
-#         return yaml.safe_load(file)
-
-# config = load_config(os.environ.get('CONFIG_PATH', 'config.yml'))
+            cv2.destroyAllWindows()
 
 with open("config.yml", "r") as f:
     config = yaml.safe_load(f)
 
 detector = Gestura(config)
 detector.run()
+os.system('clear')
