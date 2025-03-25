@@ -153,12 +153,8 @@ class Gestura:
                 self.process_detections(detections, frame.shape)
                 
                 frame = cv2.resize(frame, (240, 180))
-                cv2.imshow('Hand Detection', frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
         finally:
             cap.release()
-            cv2.destroyAllWindows()
 
 with open("config.yml", "r") as f:
     config = yaml.safe_load(f)
