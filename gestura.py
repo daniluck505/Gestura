@@ -151,8 +151,6 @@ class Gestura:
                 frame = cv2.flip(frame, 1)
                 detections = self.predict_hands(frame)
                 self.process_detections(detections, frame.shape)
-                
-                frame = cv2.resize(frame, (240, 180))
         finally:
             cap.release()
 
